@@ -53,15 +53,22 @@ public class XMLReader {
 
         LOGGER.info("Iterating over received currency tables.");
         for (String currencyTable : tablesFinder.getCurrencyTables()) {
-            LocalDate dateFile = LocalDate.parse("20" + currencyTable.substring(currencyTable.length() - 6, currencyTable.length() - 4) + "-" + currencyTable.substring(currencyTable.length() - 4, currencyTable.length() - 2) + "-" + currencyTable.substring(currencyTable.length() - 2, currencyTable.length()));
-
-            if (startChecking.compareTo(dateFile) <= 0 && stopChecking.compareTo(dateFile) >= 0) {
-                Document document = parseDocument(documentBuilder, currencyTable);
-                document.getDocumentElement().normalize();
-                getBuyAndSellCourses(document);
-            }
+            readCurrencyData(startChecking, stopChecking, documentBuilder, currencyTable);
         }
     }
+
+    private void readCurrencyData(LocalDate startChecking, LocalDate stopChecking, DocumentBuilder documentBuilder, String currencyTable) {
+        if (compareDates(startChecking, stopChecking, getFileCreationDate(currencyTable))) {
+            Document document = parseDocument(documentBuilder, currencyTable);
+            document.getDocumentElement().normalize();
+            getBuyAndSellCourses(document);
+        }
+    }
+
+    private LocalDate getFileCreationDate(String currencyTable) {
+        return LocalDate.parse("20" + currencyTable.substring(currencyTable.length() - 6, currencyTable.length() - 4) + "-" + currencyTable.substring(currencyTable.length() - 4, currencyTable.length() - 2) + "-" + currencyTable.substring(currencyTable.length() - 2, currencyTable.length()));
+    }
+
 
     private Document parseDocument(DocumentBuilder b, String e) {
         Document document = null;
@@ -87,10 +94,10 @@ public class XMLReader {
     }
 
 
-    public void getBuyAndSellCourses(Document doc) {
+    private void getBuyAndSellCourses(Document doc) {
         LocalDate dataPublic = LocalDate.parse(doc.getElementsByTagName("data_publikacji").item(0).getTextContent());
 
-        if (fromDay.compareTo(dataPublic) <= 0 && untilDay.compareTo(dataPublic) >= 0) {
+        if (compareDates(fromDay, untilDay, dataPublic)) {
             NodeList nList = doc.getElementsByTagName("pozycja");
             for (int temp = 0; temp < nList.getLength(); temp++) {
                 Node nNode = nList.item(temp);
@@ -121,6 +128,11 @@ public class XMLReader {
             LOGGER.error("Can not parse number.", e);
         }
     }
+
+    private boolean compareDates(LocalDate startChecking, LocalDate stopChecking, LocalDate dateFile) {
+        return startChecking.compareTo(dateFile) <= 0 && stopChecking.compareTo(dateFile) >= 0;
+    }
+
 
     public List<BigDecimal> getBuy() {
         return buy;
