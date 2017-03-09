@@ -12,6 +12,6 @@ public final class CurrencyMathContext {
     }
 
     public static MathContext getNewContext() {
-        return new MathContext(5, RoundingMode.CEILING);
+        return new MathContext(5, RoundingMode.HALF_EVEN);
     }
 }

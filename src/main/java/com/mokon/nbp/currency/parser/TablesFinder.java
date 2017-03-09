@@ -38,6 +38,7 @@ public class TablesFinder {
     }
 
     private URL getUrl(int i) {
+        LOGGER.info("Connecting with bank service.");
         URL dir = null;
         try {
             if (i != year) {
@@ -52,15 +53,19 @@ public class TablesFinder {
         return dir;
     }
 
-    private void closeBufferedReader(BufferedReader in) {
+    private BufferedReader getBufferedReader(URL dir) {
+        LOGGER.info("Buffering stream.");
+        BufferedReader in = null;
         try {
-            in.close();
+            in = new BufferedReader(new InputStreamReader(dir.openStream()));
         } catch (IOException e) {
-            LOGGER.error("Can not close stream.", e);
+            LOGGER.error("Can not create BufferedReader with given URL.", e);
         }
+        return in;
     }
 
     private void readFromXml(BufferedReader in) {
+        LOGGER.info("Reading from XML file.");
         String inputLine;
         try {
             while ((inputLine = in.readLine()) != null) {
@@ -73,15 +78,16 @@ public class TablesFinder {
         }
     }
 
-    private BufferedReader getBufferedReader(URL dir) {
-        BufferedReader in = null;
+
+    private void closeBufferedReader(BufferedReader in) {
+        LOGGER.info("Closing stream.");
         try {
-            in = new BufferedReader(new InputStreamReader(dir.openStream()));
+            in.close();
         } catch (IOException e) {
-            LOGGER.error("Can not create BufferedReader with given URL.", e);
+            LOGGER.error("Can not close stream.", e);
         }
-        return in;
     }
+
 
     private void getCurrentDateFormated() {
         Date date = new Date();

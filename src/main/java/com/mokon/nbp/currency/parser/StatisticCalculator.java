@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.List;
 
@@ -21,33 +20,38 @@ public class StatisticCalculator {
 
     public void calculateStatistics(List<BigDecimal> buy, List<BigDecimal> sell) {
         LOGGER.info(String.format("%.4f " + AVG_BUY_COURSE + "\n", averageCurrencyBuyCourse(buy)));
-        if (!standDeviationSell(sell).equals(valueOf(0.0))) {
-            LOGGER.info(String.format("%.4f " + STANDARD_DEVIATION, standDeviationSell(sell)));
+
+        BigDecimal standardDeviation = standardDeviationSell(sell);
+
+        if (!standardDeviation.equals(valueOf(0.0))) {
+            LOGGER.info(String.format("%.4f " + STANDARD_DEVIATION, standardDeviation));
         } else {
             LOGGER.error(STANDARD_DEVIATION_ERROR);
         }
     }
 
     private BigDecimal averageCurrencyBuyCourse(List<BigDecimal> buy) {
-        BigDecimal sum = new BigDecimal(BigInteger.ZERO);
+        LOGGER.info("Calculating average currency buy course.");
+        BigDecimal sum = BigDecimal.ZERO;
         for (BigDecimal e : buy) {
             sum = sum.add(e);
         }
-        return sum.divide(valueOf(buy.size()), 5, RoundingMode.CEILING);
+        return sum.divide(valueOf(buy.size()), 5, RoundingMode.HALF_EVEN);
     }
 
-    private BigDecimal standDeviationSell(List<BigDecimal> sell) {
-        if (sell.size() == 1) return valueOf(0);
+    private BigDecimal standardDeviationSell(List<BigDecimal> sell) {
+        LOGGER.info("Calculating stanard deviation.");
+        if (sell.size() == 1) return BigDecimal.ZERO;
         BigDecimal sum = valueOf(0);
         for (BigDecimal e : sell) {
             sum = sum.add(e);
         }
-        sum = sum.divide(valueOf(sell.size()), 5, RoundingMode.CEILING);
-        BigDecimal standardDeviation = valueOf(0);
+        sum = sum.divide(valueOf(sell.size()), 5, RoundingMode.HALF_EVEN);
+        BigDecimal standardDeviation = BigDecimal.ZERO;
         for (BigDecimal e : sell) {
             standardDeviation = e.subtract(sum).pow(2).add(standardDeviation);
         }
-        standardDeviation = sqrt(standardDeviation.divide(valueOf(sell.size()), 5, RoundingMode.CEILING));
+        standardDeviation = sqrt(standardDeviation.divide(valueOf(sell.size()), 5, RoundingMode.HALF_EVEN));
         return standardDeviation;
     }
 

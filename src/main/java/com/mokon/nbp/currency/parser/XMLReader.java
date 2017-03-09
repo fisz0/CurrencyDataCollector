@@ -93,7 +93,6 @@ public class XMLReader {
         return b;
     }
 
-
     private void getBuyAndSellCourses(Document doc) {
         LocalDate dataPublic = LocalDate.parse(doc.getElementsByTagName("data_publikacji").item(0).getTextContent());
 
