@@ -61,7 +61,7 @@ public class XMLReader {
         if (compareDates(startChecking, stopChecking, getFileCreationDate(currencyTable))) {
             Document document = parseDocument(documentBuilder, currencyTable);
             document.getDocumentElement().normalize();
-            getBuyAndSellCourses(document);
+            readDataBetweenGivenDates(document);
         }
     }
 
@@ -70,14 +70,14 @@ public class XMLReader {
     }
 
 
-    private Document parseDocument(DocumentBuilder b, String e) {
+    private Document parseDocument(DocumentBuilder b, String currencyTableName) {
         Document document = null;
         try {
-            document = b.parse(URL_GENERAL + e + ".xml");
-        } catch (SAXException e1) {
-            LOGGER.error("Can not parse desired XML file", e1);
-        } catch (IOException e1) {
-            LOGGER.error("Can not get desired XML file", e1);
+            document = b.parse(URL_GENERAL + currencyTableName + ".xml");
+        } catch (SAXException e) {
+            LOGGER.error("Can not parse desired XML file", e);
+        } catch (IOException e) {
+            LOGGER.error("Can not get desired XML file", e);
         }
         return document;
     }
@@ -93,7 +93,7 @@ public class XMLReader {
         return b;
     }
 
-    private void getBuyAndSellCourses(Document doc) {
+    private void readDataBetweenGivenDates(Document doc) {
         LocalDate dataPublic = LocalDate.parse(doc.getElementsByTagName("data_publikacji").item(0).getTextContent());
 
         if (compareDates(fromDay, untilDay, dataPublic)) {

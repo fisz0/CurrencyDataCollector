@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import static com.mokon.nbp.currency.parser.Messages.*;
 
@@ -19,8 +20,10 @@ public final class ArgumentsValidator {
         LocalDate localDate = null;
         try {
             localDate = LocalDate.parse(date);
+            localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
         } catch (java.time.format.DateTimeParseException e) {
-            LOGGER.error(WRONG_FORMAT);
+            LOGGER.error(WRONG_FORMAT, e);
+            System.exit(1);
         }
         return localDate;
     }
@@ -39,7 +42,6 @@ public final class ArgumentsValidator {
             currency = Currency.valueOf(argCurrency);
         } catch (IllegalArgumentException e) {
             LOGGER.error(CURRENCY_PARSING_ERROR);
-            System.exit(1);
         }
         return currency;
     }

@@ -40,7 +40,7 @@ public class StatisticCalculator {
     }
 
     private BigDecimal standardDeviationSell(List<BigDecimal> sell) {
-        LOGGER.info("Calculating stanard deviation.");
+        LOGGER.info("Calculating standard deviation.");
         if (sell.size() == 1) return BigDecimal.ZERO;
         BigDecimal sum = valueOf(0);
         for (BigDecimal e : sell) {
